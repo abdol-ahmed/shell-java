@@ -2,8 +2,10 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        System.out.println("$ ");
         Scanner scanner = new Scanner(System.in);
         String command = scanner.nextLine();
+
         switch (command) {
             case "exit":
                 System.out.println("Goodbye!");
