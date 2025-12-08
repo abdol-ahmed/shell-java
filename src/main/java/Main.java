@@ -11,8 +11,8 @@ public class Main {
                 System.out.println("Goodbye!");
                 System.exit(0);
             default:
-                System.out.printf(command + ": command not found");
-//                System.exit(0);
+                System.out.printf(command + ": command not foun");
+                System.exit(0);
         }
     }
 }
