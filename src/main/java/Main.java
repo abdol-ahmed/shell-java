@@ -12,7 +12,7 @@ public class Main {
                 System.exit(0);
             default:
                 System.out.printf(command + ": command not found");
-                System.exit(0);
+//                System.exit(0);
         }
     }
 }
