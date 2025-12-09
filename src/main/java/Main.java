@@ -1,7 +1,14 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    private static final Map<String, String> supportedCommands = Map.of(
+            "echo", "echo",
+            "type", "type",
+            "exit", "exit"
+    );
+    static void main(String[] args) throws Exception {
         System.out.print("$ ");
         Scanner scanner = new Scanner(System.in);
 
@@ -12,6 +19,13 @@ public class Main {
             switch (command) {
                 case "echo":
                     System.out.println(arg);
+                    break;
+                case "type":
+                    if (supportedCommands.containsKey(arg)) {
+                        System.out.println(arg + " is a shell builtin");
+                    } else {
+                        System.out.println(arg + ": not found");
+                    }
                     break;
                 case "exit":
                     System.exit(0);
