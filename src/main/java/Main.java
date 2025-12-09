@@ -9,7 +9,6 @@ public class Main {
             String command = scanner.nextLine();
             switch (command) {
                 case "exit":
-                    System.out.println("Goodbye!");
                     System.exit(0);
                 default:
                     System.out.println(command + ": command not found");
