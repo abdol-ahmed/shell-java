@@ -10,9 +10,10 @@ public class Type implements Command {
             String path = System.getenv("PATH");
             String[] paths = path.split(File.pathSeparator);
             for (String p : paths) {
-                File file = new File(p + "/" + arg);
-                if (file.exists() && file.canExecute()) {
-                    System.out.println(arg + " is " + file.getAbsolutePath());
+                File dir = new File(p);
+                File commandFile = new File(dir, arg);
+                if (commandFile.exists() && commandFile.canExecute()) {
+                    System.out.println(arg + " is " + commandFile.getAbsolutePath());
                     return true;
                 }
             }
