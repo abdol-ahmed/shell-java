@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
-    static void main(String[] args) throws Exception {
+    static void main(String[] args) {
         boolean running = true;
         try {
             while (running) {
@@ -18,15 +18,12 @@ public class Main {
                 if (cmd != null) {
                     running = cmd.execute(arguments);
                 } else {
-                    System.out.println(command + ": command not found");
+                    running = Commands.getCommand("./").execute(arguments);
                 }
-
             }
         } catch (Exception e) {
-            running = false;
             throw new RuntimeException(e);
         } finally {
-            running = false;
             scanner.close();
         }
     }

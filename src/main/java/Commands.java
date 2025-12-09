@@ -7,6 +7,7 @@ public class Commands {
         commands.put("echo", new Echo());
         commands.put("type", new Type());
         commands.put("exit", new Exit());
+        commands.put("./", new Execute());
     }
 
     public static Command getCommand(String command) {
