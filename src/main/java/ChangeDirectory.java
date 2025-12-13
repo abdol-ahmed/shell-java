@@ -8,8 +8,12 @@ public class    ChangeDirectory implements Command {
 
         String arg = args.length > 1 ? args[1] : "";
         if (arg.isEmpty()) {
-            System.out.println(System.getProperty("user.home"));
-            System.setProperty("user.dir", System.getProperty("user.home"));
+            System.setProperty("user.dir", System.getenv("HOME"));
+            return true;
+        }
+
+        if (arg.equals("~")) {
+            System.setProperty("user.dir", System.getenv("HOME"));
             return true;
         }
 
