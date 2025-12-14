@@ -1,9 +1,13 @@
+package tokenizer;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Tokenizer {
     private final String input;
     private int pos;
+    private final Set<Character> charactersToIgnore = Set.of('\"', ' ');
 
     public Tokenizer(String input) {
         this.input = input;
@@ -14,45 +18,35 @@ public class Tokenizer {
         List<Token> tokens = new ArrayList<>();
         StringBuilder buf = new StringBuilder();
         boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
 
         while (!isEnd()) {
-            if (inSingleQuote) {
-                if (isSingleQuote(currentChar())) {
-                    tokens.add(new Token(TokenType.STRING, buf.toString()));
-                    inSingleQuote = false;
-                    buf.setLength(0);
+            if (isSingleQuote(currentChar())) {
+                if (inDoubleQuote) {
+                    buf.append(currentChar());
                 } else {
-                    buf.append(currentChar());
+                    inSingleQuote = !inSingleQuote;
                 }
-            }else {
-                // start quote
-                if (isSingleQuote(currentChar())) {
-                    if (!buf.isEmpty()) {
-                        tokens.add(new Token(TokenType.WORD, buf.toString()));
-                        buf.setLength(0);
-                    }
-                    inSingleQuote = true;
-                } else if (isWhitespace(currentChar())) {
-                    if (!buf.isEmpty()) {
-                        tokens.add(new Token(TokenType.WORD, buf.toString()));
-                        buf.setLength(0);
-                    }
+            } else if (isDoubleQuote(currentChar())) {
+                if (inSingleQuote) {
                     buf.append(currentChar());
-                    skipWhitespace();
-                    continue;
                 } else {
-                    buf.append(currentChar());
+                    inDoubleQuote = !inDoubleQuote;
                 }
+            } else if (inSingleQuote || inDoubleQuote) {
+                buf.append(currentChar());
+            } else if (!charactersToIgnore.contains(currentChar())) {
+                buf.append(currentChar());
+            } else if (!buf.isEmpty()) {
+                tokens.add(new Token(TokenType.WORD, buf.toString()));
+                buf.setLength(0);
             }
+
             this.pos++;
         }
 
         if (!buf.isEmpty()) {
             tokens.add(new Token(TokenType.WORD, buf.toString()));
-        }
-
-        if (inSingleQuote) {
-            throw new RuntimeException("Unclosed single quote");
         }
 
         return tokens;

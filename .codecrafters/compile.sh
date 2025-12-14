@@ -6,6 +6,6 @@
 #
 # Learn more: https://codecrafters.io/program-interface
 
-set -e # Exit on failure
+set -e # commands.builtin.Exit on failure
 
 mvn -q -B package -Ddir=/tmp/codecrafters-build-shell-java

@@ -1,3 +1,9 @@
+package commands.builtin;
+
+import dto.InputDto;
+import commands.Command;
+import commands.CommandType;
+
 public class Exit implements Command {
     private final CommandType type;
 
@@ -11,7 +17,12 @@ public class Exit implements Command {
     }
 
     @Override
-    public boolean execute(String[] args) {
-        return false;
+    public String name() {
+        return "exit";
+    }
+
+    @Override
+    public void execute(InputDto input) {
+        System.exit(0);
     }
 }
