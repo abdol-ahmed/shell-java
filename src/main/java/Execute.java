@@ -6,6 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Execute implements Command {
+    private final CommandType type;
+
+    public Execute() {
+        this.type = CommandType.EXTERNAL;
+    }
+
+    @Override
+    public CommandType getType() {
+        return type;
+    }
+
     @Override
     public boolean execute(String[] args) {
         String programName = args[0];

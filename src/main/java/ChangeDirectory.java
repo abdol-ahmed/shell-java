@@ -3,6 +3,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class    ChangeDirectory implements Command {
+    private final CommandType type;
+
+    public ChangeDirectory() {
+        this.type = CommandType.BUILTIN;
+    }
+
+    @Override
+    public CommandType getType() {
+        return type;
+    }
+
     @Override
     public boolean execute(String[] args) {
 

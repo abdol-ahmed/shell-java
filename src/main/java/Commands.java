@@ -5,6 +5,7 @@ public class Commands {
     private static final Map<String, Command> commands = new HashMap<>();
     static {
         commands.put("echo", new Echo());
+        commands.put("cat", new Catenate());
         commands.put("type", new Type());
         commands.put("exit", new Exit());
         commands.put("pwd", new PrintWorkingDirectory());
