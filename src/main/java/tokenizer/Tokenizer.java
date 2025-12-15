@@ -39,7 +39,7 @@ public class Tokenizer {
                     }
 
                     if (Character.isWhitespace(c)) {
-                        if (!buf.isEmpty()) {
+                        if (!buf.isEmpty() || quoted) { // <-- Emit if quoted, even if empty
                             tokens.add(new Token(quoted ? TokenType.STRING : TokenType.WORD, buf.toString()));
                             buf.setLength(0);
                             quoted = false;
@@ -106,7 +106,7 @@ public class Tokenizer {
             throw new IllegalArgumentException("Unterminated quote in input");
         }
 
-        if (!buf.isEmpty()) {
+        if (!buf.isEmpty() || quoted) {
             tokens.add(new Token(quoted ? TokenType.STRING : TokenType.WORD, buf.toString()));
         }
 
