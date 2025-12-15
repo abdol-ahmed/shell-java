@@ -13,6 +13,10 @@ public class Token {
         return value;
     }
 
+    public TokenType getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return type + "(" + value + ")";

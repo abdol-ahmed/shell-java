@@ -5,5 +5,5 @@ import java.util.List;
 public record InputDto (
     String command,
     List<String> args,
-    List<String> keywords) {
+    List<String> argv) {
 }

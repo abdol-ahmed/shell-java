@@ -1,10 +1,10 @@
 package commands.builtin;
 
-import dto.InputDto;
 import commands.Command;
 import commands.CommandFactory;
 import commands.CommandType;
 import commands.external.ExternalCommand;
+import dto.InputDto;
 
 public class Type implements Command {
     private final CommandType type;
@@ -28,7 +28,13 @@ public class Type implements Command {
 
     @Override
     public void execute(InputDto input) {
+        if (input.args() == null || input.args().isEmpty()) {
+            System.out.println("type: missing operand");
+            return;
+        }
+
         String arg = input.args().getFirst();
+
         factory.getCommand(arg).ifPresentOrElse(
                 this::printCommandType,
                 () -> System.out.printf("%s: not found%n", arg)

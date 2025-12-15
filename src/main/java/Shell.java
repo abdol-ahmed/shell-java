@@ -1,6 +1,5 @@
-
-import dto.InputDto;
 import commands.CommandFactory;
+import dto.InputDto;
 import tokenizer.Token;
 import tokenizer.Tokenizer;
 import tokenizer.Translator;
@@ -18,20 +17,24 @@ public class Shell {
         try (var scanner = new Scanner(System.in)) {
             while (true) {
                 System.out.print("$ ");
+                if (!scanner.hasNextLine()) {
+                    break;
+                }
 
-                String input = scanner.nextLine().trim();
+                String input = scanner.nextLine();
                 if (input.isEmpty()) continue;
 
-                List<Token> keywords = new Tokenizer(input).tokenize();
-                InputDto inputDto = new Translator(keywords).translate();
-
-                commandFactory.getCommand(inputDto.command()).ifPresentOrElse(
-                       cmd -> cmd.execute(inputDto),
-                       () -> System.out.println(inputDto.command() + ": command not found")
-               );
+                try {
+                    List<Token> tokens = new Tokenizer(input).tokenize();
+                    InputDto inputDto = new Translator(tokens).translate();
+                    commandFactory.getCommand(inputDto.command()).ifPresentOrElse(
+                            cmd -> cmd.execute(inputDto),
+                            () -> System.out.println(inputDto.command() + ": command not found")
+                    );
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 }

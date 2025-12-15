@@ -2,12 +2,10 @@ package tokenizer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class Tokenizer {
     private final String input;
     private int pos;
-    private final Set<Character> charactersToIgnore = Set.of('\"', ' ');
 
     public Tokenizer(String input) {
         this.input = input;
@@ -17,67 +15,83 @@ public class Tokenizer {
     public List<Token> tokenize() {
         List<Token> tokens = new ArrayList<>();
         StringBuilder buf = new StringBuilder();
-        boolean inSingleQuote = false;
-        boolean inDoubleQuote = false;
+        this.pos = 0;
+        State state = State.NORMAL;
+        boolean escapeNext = false;
+        boolean quoted = false;
 
         while (!isEnd()) {
-            if (isSingleQuote(currentChar())) {
-                if (inDoubleQuote) {
-                    buf.append(currentChar());
-                } else {
-                    inSingleQuote = !inSingleQuote;
-                }
-            } else if (isDoubleQuote(currentChar())) {
-                if (inSingleQuote) {
-                    buf.append(currentChar());
-                } else {
-                    inDoubleQuote = !inDoubleQuote;
-                }
-            } else if (inSingleQuote || inDoubleQuote) {
-                buf.append(currentChar());
-            } else if (!charactersToIgnore.contains(currentChar())) {
-                buf.append(currentChar());
-            } else if (!buf.isEmpty()) {
-                tokens.add(new Token(TokenType.WORD, buf.toString()));
-                buf.setLength(0);
-            }
+            char c = currentChar();
 
-            this.pos++;
+            switch (state) {
+                case NORMAL -> {
+                    if (escapeNext) {
+                        buf.append(c);
+                        escapeNext = false;
+                        pos++;
+                        continue;
+                    }
+
+                    if (c == '\\') {
+                        escapeNext = true;
+                        pos++;
+                        continue;
+                    }
+
+                    if (Character.isWhitespace(c)) {
+                        if (!buf.isEmpty()) {
+                            tokens.add(new Token(quoted ? TokenType.STRING : TokenType.WORD, buf.toString()));
+                            buf.setLength(0);
+                            quoted = false;
+                        }
+                        pos++;
+                    } else if (c == '\'') {
+                        state = State.IN_SINGLE;
+                        quoted = true;
+                        pos++;
+                    } else if (c == '"') {
+                        state = State.IN_DOUBLE;
+                        quoted = true;
+                        pos++;
+                    } else {
+                        buf.append(c);
+                        pos++;
+                    }
+                }
+                case IN_SINGLE -> {
+                    if (c == '\'') {
+                        state = State.NORMAL;
+                        pos++;
+                    } else {
+                        buf.append(c);
+                        pos++;
+                    }
+                }
+                case IN_DOUBLE -> {
+                    if (c == '"') {
+                        state = State.NORMAL;
+                        pos++;
+                    } else {
+                        buf.append(c);
+                        pos++;
+                    }
+                }
+            }
+        }
+
+        if (escapeNext) {
+            throw new IllegalArgumentException("Dangling escape (\\) at end of input");
+        }
+
+        if (state != State.NORMAL) {
+            throw new IllegalArgumentException("Unterminated quote in input");
         }
 
         if (!buf.isEmpty()) {
-            tokens.add(new Token(TokenType.WORD, buf.toString()));
+            tokens.add(new Token(quoted ? TokenType.STRING : TokenType.WORD, buf.toString()));
         }
 
         return tokens;
-    }
-
-    private boolean isWhitespace(char c) {
-        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
-    }
-
-    private boolean isSingleQuote(char c) {
-        return c == '\'';
-    }
-
-    private boolean isDoubleQuote(char c) {
-        return c == '"';
-    }
-
-    private boolean isLetter(char c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-    }
-
-    private boolean isDigit(char c) {
-        return c >= '0' && c <= '9';
-    }
-
-    private boolean isSpecial(char c) {
-        return c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>' || c == ',' || c == '.' || c == ':' || c == ';';
-    }
-
-    private boolean isAlphaNumeric(char c) {
-        return isLetter(c) || isDigit(c);
     }
 
     private boolean isEnd() {
@@ -88,45 +102,4 @@ public class Tokenizer {
         return input.charAt(pos);
     }
 
-    private void skipWhitespace() {
-        while (!isEnd() && isWhitespace(currentChar())) {
-            pos++;
-        }
-    }
-
-    private void skipComment() {
-        while (!isEnd() && currentChar() != '\n') {
-            pos++;
-        }
-    }
-
-    private void skipQuote() {
-        while (!isEnd() && currentChar() != '\"') {
-            pos++;
-        }
-    }
-
-    private void skipString() {
-        while (!isEnd() && currentChar() != '\"') {
-            pos++;
-        }
-    }
-
-    private void skipNumber() {
-        while (!isEnd() && isDigit(currentChar())) {
-            pos++;
-        }
-    }
-
-    private void skipIdentifier() {
-        while (!isEnd() && isAlphaNumeric(currentChar())) {
-            pos++;
-        }
-    }
-
-    private void skipSpecial() {
-        while (!isEnd() && isSpecial(currentChar())) {
-            pos++;
-        }
-    }
 }

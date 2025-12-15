@@ -1,8 +1,8 @@
 package commands.builtin;
 
-import dto.InputDto;
 import commands.Command;
 import commands.CommandType;
+import dto.InputDto;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,21 +17,22 @@ public class Catenate implements Command {
 
     @Override
     public String name() {
-        return "catenate";
+        return "cat";
     }
 
     @Override
     public void execute(InputDto input) {
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
 
         for (String arg : input.args()) {
-            data.append(readFile(arg));
+            data.append(readFile(arg)).append(" ");
         }
+        data.deleteCharAt(data.length() - 1);
         System.out.println(data.toString());
     }
 
-    public StringBuffer readFile(String path) {
-        StringBuffer data = new StringBuffer();
+    public StringBuilder readFile(String path) {
+        StringBuilder data = new StringBuilder();
                 File file = new File(path);
         try (Scanner sc = new Scanner(file)) {
             while (sc.hasNextLine()) {
@@ -41,13 +42,11 @@ public class Catenate implements Command {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File not found");
+            System.out.printf("cat: %s: No such file or directory%n", path);
         }
 
         return data;
     }
-
 }
 
-
-//cat "file name" "'file name' with spaces"
+//cat "/Volumes/HD1/Users/abdullah.ahmed/f\\n22" "/Volumes/HD1/Users/abdullah.ahmed/f\\57" "/Volumes/HD1/Users/abdullah.ahmed/f'\\'83"

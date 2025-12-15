@@ -5,18 +5,21 @@ import dto.InputDto;
 import java.util.List;
 
 public class Translator {
-    private final List<Token> keywords;
+    private final List<Token> tokens;
 
-    public Translator(List<Token> keywords) {
-        this.keywords = keywords;
+    public Translator(List<Token> tokens) {
+        this.tokens = tokens;
     }
 
     public InputDto translate() {
-        Token command = keywords.getFirst();
+        if (tokens.isEmpty()) {
+            throw new IllegalArgumentException("Empty input");
+        }
+        Token command = tokens.getFirst();
         return new InputDto(
                 command.getValue(),
-                keywords.subList(1, keywords.size()).stream().map(Token::getValue).toList(),
-                keywords.stream().map(Token::getValue).toList()
+                tokens.subList(1, tokens.size()).stream().map(Token::getValue).toList(),
+                tokens.stream().map(Token::getValue).toList()
         );
     }
 }

@@ -1,8 +1,8 @@
 package commands.builtin;
 
-import dto.InputDto;
 import commands.Command;
 import commands.CommandType;
+import dto.InputDto;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,24 +26,42 @@ public class ChangeDirectory implements Command {
 
     @Override
     public void execute(InputDto input) {
-        String dir = input.args().getFirst();
+        String dir;
 
-        if (dir.startsWith("/")) {
-            changeDir(dir);
-        } else if (dir.startsWith("~")) {
-            String usersDir = System.getenv("HOME");
-            Path path = Path.of(usersDir);
-            changeDir(path.toString());
-        }else {
-            Path cwd = Paths.get(System.getProperty("user.dir"));
-            String absolutePath = cwd.resolve(dir).normalize().toString();
-            changeDir(absolutePath);
+        if (input.args() == null || input.args().isEmpty()) {
+            dir = System.getenv("HOME");
+            if (dir == null || dir.isBlank()) {
+                System.out.println("cd: HOME not set");
+                return;
+            }
+        } else {
+            dir = input.args().getFirst();
         }
+
+        if (dir.startsWith("~")) {
+            String home = System.getenv("HOME");
+            if (home == null || home.isBlank()) {
+                System.out.println("cd: HOME not set");
+                return;
+            }
+            dir = home + dir.substring(1); // keeps suffix, handles "~" and "~/x"
+        }
+
+        Path target;
+        if (Path.of(dir).isAbsolute()) {
+            target = Path.of(dir);
+        } else {
+            Path cwd = Paths.get(System.getProperty("user.dir"));
+            target = cwd.resolve(dir);
+        }
+
+        changeDir(target.normalize().toString());
     }
 
     private void changeDir(String dir) {
-        if (Files.isDirectory(Path.of(dir)))
-            System.setProperty("user.dir", dir);
+        Path normalized = Path.of(dir).toAbsolutePath().normalize();
+        if (Files.isDirectory(normalized))
+            System.setProperty("user.dir", normalized.toString());
         else
             System.out.printf("cd: %s: No such file or directory%n", dir);
     }

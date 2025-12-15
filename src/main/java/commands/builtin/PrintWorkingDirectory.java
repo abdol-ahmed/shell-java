@@ -1,8 +1,8 @@
 package commands.builtin;
 
-import dto.InputDto;
 import commands.Command;
 import commands.CommandType;
+import dto.InputDto;
 
 public class PrintWorkingDirectory implements Command {
     private final CommandType type;

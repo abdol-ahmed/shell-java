@@ -1,7 +1,6 @@
 package commands;
 
 import commands.builtin.*;
-import commands.external.ExternalCommand;
 import commands.external.ExternalCommandPathFinder;
 
 import java.util.HashMap;
