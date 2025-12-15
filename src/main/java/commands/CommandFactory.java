@@ -22,8 +22,6 @@ public class CommandFactory {
         builtinCommands.put(pwdCommand.name(), pwdCommand);
         var cdCommand = new ChangeDirectory();
         builtinCommands.put(cdCommand.name(), cdCommand);
-//        var catenateCommand = new Catenate();
-//        builtinCommands.put(catenateCommand.name(), catenateCommand);
         this.externalCommandPathFinder = new ExternalCommandPathFinder();
     }
 
