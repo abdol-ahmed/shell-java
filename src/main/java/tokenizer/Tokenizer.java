@@ -71,6 +71,25 @@ public class Tokenizer {
                     if (c == '"') {
                         state = State.NORMAL;
                         pos++;
+                    } else if (c == '\\') {
+                        if (pos + 1 < input.length()) {
+                            char next = input.charAt(pos + 1);
+                            if (next == '"' || next == '\\' || next == '$' || next == '`') {
+                                buf.append(next);
+                                pos += 2;
+                            } else if (next == '\n') {
+                                // line continuation inside double quotes: consume both
+                                pos += 2;
+                            } else {
+                                // backslash not special here, keep it literal
+                                buf.append(c);
+                                pos++;
+                            }
+                        } else {
+                            // trailing backslash at end, treat literal
+                            buf.append(c);
+                            pos++;
+                        }
                     } else {
                         buf.append(c);
                         pos++;
